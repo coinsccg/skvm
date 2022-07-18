@@ -157,7 +157,7 @@ version = "1"
 optional = true
 
 [dependencies.rust-gpu-tools]
-version = "0.6.0"
+version = "0.6.1"
 optional = true
 default-features = false
 features = ["cuda"]
