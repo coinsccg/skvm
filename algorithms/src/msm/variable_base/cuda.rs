@@ -562,12 +562,14 @@ fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaReques
                 tmp.push_back(request);
                 continue;
             }
+            let len = tmp.len();
             drop(tmp);
 
             let mut context = context.clone();
             let cuda_thread1 = cuda_thread.clone();
+
             std::thread::spawn(move || {
-                eprintln!("--------------------------------------------------------------------------{}", tmp.len());
+                eprintln!("--------------------------------------------------------------------------{}", len);
                 let out = handle_cuda_request(&mut context, &request, index);
                 request.response.send(out).ok();
                 cuda_thread1.fetch_sub(1,  Ordering::SeqCst);
