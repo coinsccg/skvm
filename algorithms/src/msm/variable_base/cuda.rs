@@ -413,7 +413,7 @@ fn load_cuda_program(device: &Device) -> Result<Program, GPUError> {
     Ok(Program::Cuda(cuda_program))
 }
 
-fn handle_cuda_request(context: &mut CudaContext, request: &CudaRequest,  index: i16) -> Result<G1Projective, GPUError> {
+fn handle_cuda_request(context: &mut CudaContext, request: &CudaRequest,  index: usize) -> Result<G1Projective, GPUError> {
     let devices: Vec<_> = Device::all();
     let device=  &load_cuda_program(devices[index]).unwrap();
     let mapped_bases: Vec<_> = crate::cfg_iter!(request.bases)
@@ -515,7 +515,7 @@ fn handle_cuda_request(context: &mut CudaContext, request: &CudaRequest,  index:
 
 
 /// Initialize the cuda request handler.
-fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaRequest>, index: i16) {
+fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaRequest>, index: usize) {
     let num_groups = (SCALAR_BITS + BIT_WIDTH - 1) / BIT_WIDTH;
 
     let mut context = CudaContext {
@@ -576,7 +576,7 @@ fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaReques
     }
 }
 
-fn init_cuda_dispatch(index: i16) {
+fn init_cuda_dispatch(index: usize) {
     if let Ok(mut dispatchers) = CUDA_DISPATCH.write() {
         if dispatchers.len() > 0 {
             return;
@@ -626,14 +626,14 @@ pub(super) fn msm_cuda<G: AffineCurve>(
     }
 
     if len == 0 {
-        init_cuda_dispatch(index);
+        init_cuda_dispatch(index as usize);
     }
 
     // init_cuda_dispatch(index);
 
     let (sender, receiver) = crossbeam_channel::bounded(1);
     if let Ok(mut dispatcher) = CUDA_DISPATCH.read() {
-        if let Some(dispatcher_sender) = dispatcher.get(index){
+        if let Some(dispatcher_sender) = dispatcher.get(index as usize){
             dispatcher_sender.send(CudaRequest {
                 bases: unsafe { std::mem::transmute(bases.to_vec()) },
                 scalars: unsafe { std::mem::transmute(scalars.to_vec()) },
