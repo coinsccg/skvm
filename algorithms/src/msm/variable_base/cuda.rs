@@ -542,13 +542,13 @@ fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaReques
                     if cuda_thread1.load(Ordering::SeqCst) < 80 {
                         let request = tmp1.pop_front().unwrap();
                         drop(tmp1);
-
+                        cuda_thread.fetch_add(1,  Ordering::SeqCst);
                         std::thread::spawn(move || {
                             let out = handle_cuda_request(&mut context, &request, index);
                             request.response.send(out).ok();
                             cuda_thread1.fetch_sub(1,  Ordering::SeqCst);
                         });
-                        cuda_thread.fetch_add(1,  Ordering::SeqCst);
+
                     }
                 }
             }
@@ -567,14 +567,14 @@ fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaReques
 
             let mut context = context.clone();
             let cuda_thread1 = cuda_thread.clone();
-
+            cuda_thread.fetch_add(1,  Ordering::SeqCst);
             std::thread::spawn(move || {
                 eprintln!("--------------------------------------------------------------------------{}", len);
                 let out = handle_cuda_request(&mut context, &request, index);
                 request.response.send(out).ok();
                 cuda_thread1.fetch_sub(1,  Ordering::SeqCst);
             });
-            cuda_thread.fetch_add(1,  Ordering::SeqCst);
+
         }
 
     }
