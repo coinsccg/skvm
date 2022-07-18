@@ -523,7 +523,7 @@ fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaReques
         pixel_func_name: "msm6_pixel".to_string(),
         row_func_name: "msm6_collapse_rows".to_string(),
     };
-    let mut tmp = Arc::new(RwLock::new(VecDeque::new()));
+    // let mut tmp = Arc::new(RwLock::new(VecDeque::new()));
 
     //
     // let mut tmp1 = tmp.clone();
@@ -557,7 +557,7 @@ fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaReques
 
 
     while let Ok(mut request) = input.recv() {
-        if let Ok(mut tmp) = tmp.write() {
+        // if let Ok(mut tmp) = tmp.write() {
             // if cuda_thread.load(Ordering::SeqCst) >= 80 {
             //     tmp.push_back(request);
             //     continue;
@@ -571,7 +571,7 @@ fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaReques
                 cuda_thread1.fetch_sub(1,  Ordering::SeqCst);
             });
             cuda_thread.fetch_add(1,  Ordering::SeqCst);
-        }
+        // }
 
     }
 }
