@@ -468,7 +468,7 @@ fn handle_cuda_request(context: &mut CudaContext, request: &CudaRequest,  index:
         .arg(&(window_lengths.len() as u32))
         .run()?;
 
-    let kernel_2 = program.create_kernel(&context.row_func_name, 1, context.num_groups as usize)?;
+    let kernel_2 = program.create_kernel(&context.row_func_name, 4, context.num_groups as usize)?;
 
     kernel_2
         .arg(&result_buffer)
