@@ -1,0 +1,263 @@
+[package]
+name = "snarkvm-algorithms"
+version = "0.8.0"
+authors = [ "The Aleo Team <hello@aleo.org>" ]
+description = "Algorithms for a decentralized virtual machine"
+homepage = "https://aleo.org"
+repository = "https://github.com/AleoHQ/snarkVM"
+keywords = [
+  "aleo",
+  "cryptography",
+  "blockchain",
+  "decentralized",
+  "zero-knowledge"
+]
+categories = [ "cryptography::cryptocurrencies", "operating-systems" ]
+include = [ "Cargo.toml", "src", "README.md", "LICENSE.md" ]
+license = "GPL-3.0"
+edition = "2018"
+
+[[bench]]
+name = "msm-variable-base"
+path = "benches/msm/variable_base.rs"
+harness = false
+
+[[bench]]
+name = "commitment-pedersen"
+path = "benches/commitment/pedersen.rs"
+harness = false
+
+[[bench]]
+name = "crh-pedersen"
+path = "benches/crh/pedersen.rs"
+harness = false
+
+[[bench]]
+name = "crh-bhp"
+path = "benches/crh/bhp.rs"
+harness = false
+
+[[bench]]
+name = "encryption-aleo"
+path = "benches/encryption/aleo.rs"
+harness = false
+
+[[bench]]
+name = "fft"
+path = "benches/fft/fft.rs"
+harness = false
+
+[[bench]]
+name = "hash_to_curve"
+path = "benches/hash_to_curve/hash_to_curve.rs"
+harness = false
+
+[[bench]]
+name = "poseidon_sponge"
+path = "benches/sponge/poseidon.rs"
+harness = false
+
+[[bench]]
+name = "prf"
+path = "benches/prf/poseidon.rs"
+harness = false
+
+[[bench]]
+name = "signature-aleo"
+path = "benches/signature/aleo.rs"
+harness = false
+
+[[bench]]
+name = "snark-groth16"
+path = "benches/snark/groth16.rs"
+harness = false
+
+[[example]]
+name = "groth16"
+path = "examples/snark/groth16.rs"
+
+[dependencies.snarkvm-curves]
+path = "../curves"
+version = "0.8.0"
+default-features = false
+
+[dependencies.snarkvm-fields]
+path = "../fields"
+version = "0.8.0"
+default-features = false
+
+[dependencies.snarkvm-profiler]
+path = "../profiler"
+version = "0.8.0"
+default-features = false
+
+[dependencies.snarkvm-r1cs]
+path = "../r1cs"
+version = "0.8.0"
+default-features = false
+
+[dependencies.snarkvm-utilities]
+path = "../utilities"
+version = "0.8.0"
+default-features = false
+
+[dependencies.aleo-std]
+version = "0.1.8"
+
+[dependencies.anyhow]
+version = "1.0"
+
+[dependencies.blake2]
+version = "0.9"
+optional = true
+
+[dependencies.blake2s_simd]
+version = "1.0"
+
+[dependencies.crossbeam-channel]
+version = "0.5"
+
+[dependencies.derivative]
+version = "2"
+
+[dependencies.digest]
+version = "0.9"
+
+[dependencies.hex]
+version = "0.4.3"
+
+[dependencies.itertools]
+version = "0.10.3"
+
+[dependencies.lazy_static]
+version = "1.4"
+
+[dependencies.once_cell]
+version = "1.9"
+
+[dependencies.rand]
+version = "0.8"
+
+[dependencies.getrandom]
+version = "0.2"
+optional = true
+features = [ "js" ]
+default-features = false
+
+[dependencies.num_cpus]
+version = "1"
+optional = true
+
+[dependencies.rand_chacha]
+version = "0.3"
+default-features = false
+
+[dependencies.rayon]
+version = "1"
+optional = true
+
+[dependencies.rust-gpu-tools]
+version = "0.6.0"
+optional = true
+default-features = false
+features = ["cuda"]
+
+[dependencies.serde]
+version = "1.0"
+default-features = false
+features = [ "derive" ]
+
+[dependencies.sha2]
+version = "0.10"
+default-features = false
+
+[dependencies.smallvec]
+version = "1.8"
+default-features = false
+features = [ "const_generics", "const_new" ]
+
+[dependencies.thiserror]
+version = "1.0"
+
+[dev-dependencies.expect-test]
+version = "1.1.0"
+
+[dev-dependencies.bincode]
+version = "1"
+
+[dev-dependencies.criterion]
+version = "0.3.5"
+
+[dev-dependencies.csv]
+version = "1"
+
+[dev-dependencies.hex]
+version = "0.4"
+
+[dev-dependencies.rand_xorshift]
+version = "0.3"
+
+[dev-dependencies.serde]
+version = "1"
+features = [ "derive" ]
+
+[dev-dependencies.serde_json]
+version = "1"
+
+[dev-dependencies.serial_test]
+version = "0.5"
+
+[features]
+default = [
+  "full",
+  "parallel",
+  "snarkvm-curves/default",
+  "snarkvm-fields/default",
+  "snarkvm-r1cs/default",
+  "snarkvm-utilities/default"
+]
+full = [
+  "commitment",
+  "crh",
+  "encryption",
+  "fft",
+  "hash_to_curve",
+  "merkle_tree",
+  "msm",
+  "prf",
+  "signature",
+  "snark"
+]
+wasm = [
+  "commitment",
+  "crh",
+  "crypto_hash",
+  "encryption",
+  "fft",
+  "hash_to_curve",
+  "merkle_tree",
+  "msm",
+  "prf",
+  "signature",
+  "snark",
+  "getrandom"
+]
+parallel = [
+  "rayon",
+  "num_cpus",
+  "snarkvm-fields/parallel",
+  "snarkvm-utilities/parallel"
+]
+print-trace = [ "snarkvm-profiler/print-trace" ]
+cuda = [ "rust-gpu-tools" ]
+commitment = [ "crh" ]
+crh = [ ]
+crypto_hash = [ "blake2" ]
+encryption = [ "signature" ]
+fft = [ ]
+hash_to_curve = [ ]
+merkle_tree = [ ]
+msm = [ ]
+prf = [ ]
+signature = [ "encryption", "crypto_hash" ]
+snark = [ "fft", "msm" ]
