@@ -536,8 +536,9 @@ fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaReques
         loop {
             let mut context = context.clone();
             if let Ok(mut tmp1) = tmp1.write() {
-                eprintln!("----------------------------------------------------------{}", tmp1.len());
+
                 if tmp1.len() > 0 {
+                    eprintln!("----------------------------------------------------------{}", tmp1.len());
                     let cuda_thread1 = cuda_thread.clone();
                     if cuda_thread1.load(Ordering::SeqCst) < 80 {
                         let request = tmp1.pop_front().unwrap();
