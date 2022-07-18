@@ -626,14 +626,14 @@ pub(super) fn msm_cuda<G: AffineCurve>(
     }
 
     if len == 0 {
-        init_cuda_dispatch(index as usize);
+        init_cuda_dispatch(0);
     }
 
     // init_cuda_dispatch(index);
 
     let (sender, receiver) = crossbeam_channel::bounded(1);
     if let Ok(mut dispatcher) = CUDA_DISPATCH.read() {
-        if let Some(dispatcher_sender) = dispatcher.get(index as usize){
+        if let Some(dispatcher_sender) = dispatcher.get(0){
             dispatcher_sender.send(CudaRequest {
                 bases: unsafe { std::mem::transmute(bases.to_vec()) },
                 scalars: unsafe { std::mem::transmute(scalars.to_vec()) },
