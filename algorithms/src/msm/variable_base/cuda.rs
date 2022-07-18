@@ -54,7 +54,7 @@ struct CudaContext {
 const SCALAR_BITS: usize = 253;
 const BIT_WIDTH: usize = 1;
 const LIMB_COUNT: usize = 6;
-const WINDOW_SIZE: u32 = 128; // must match in cuda source
+const WINDOW_SIZE: u32 = 512; // must match in cuda source
 
 #[derive(Clone, Debug)]
 #[allow(dead_code)]
