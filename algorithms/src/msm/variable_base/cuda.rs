@@ -528,7 +528,7 @@ fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaReques
     //
     // let mut tmp1 = tmp.clone();
     // let mut context1 = context.clone();
-    // let cuda_thread: Arc<AtomicU32> = Arc::new(AtomicU32::new(0));
+    let cuda_thread: Arc<AtomicU32> = Arc::new(AtomicU32::new(0));
     // let cuda_thread1 = cuda_thread.clone();
     // std::thread::spawn(move || {
     //     let mut context = context1.clone();
