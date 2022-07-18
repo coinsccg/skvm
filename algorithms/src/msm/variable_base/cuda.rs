@@ -523,57 +523,56 @@ fn initialize_cuda_request_handler(input: crossbeam_channel::Receiver<CudaReques
         pixel_func_name: "msm6_pixel".to_string(),
         row_func_name: "msm6_collapse_rows".to_string(),
     };
-    // let mut tmp = Arc::new(RwLock::new(VecDeque::new()));
+    let mut tmp = Arc::new(RwLock::new(VecDeque::new()));
 
-    //
-    // let mut tmp1 = tmp.clone();
-    // let mut context1 = context.clone();
+
+    let mut tmp1 = tmp.clone();
+    let mut context1 = context.clone();
     let cuda_thread: Arc<AtomicU32> = Arc::new(AtomicU32::new(0));
-    // let cuda_thread1 = cuda_thread.clone();
-    // std::thread::spawn(move || {
-    //     let mut context = context1.clone();
-    //     let cuda_thread = cuda_thread1.clone();
-    //     loop {
-    //         let mut context = context.clone();
-    //         if let Ok(mut tmp1) = tmp1.write() {
-    //
-    //             if tmp1.len() > 0 {
-    //                 let cuda_thread1 = cuda_thread.clone();
-    //                 if cuda_thread1.load(Ordering::SeqCst) < 80 {
-    //                     let request = tmp1.pop_front().unwrap();
-    //                     drop(tmp1);
-    //
-    //                     std::thread::spawn(move || {
-    //                         let out = handle_cuda_request(&mut context, &request, index);
-    //                         request.response.send(out).ok();
-    //                         cuda_thread1.fetch_sub(1,  Ordering::SeqCst);
-    //                     });
-    //                     cuda_thread.fetch_add(1,  Ordering::SeqCst);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // });
+    let cuda_thread1 = cuda_thread.clone();
+    std::thread::spawn(move || {
+        let mut context = context1.clone();
+        let cuda_thread = cuda_thread1.clone();
+        loop {
+            let mut context = context.clone();
+            if let Ok(mut tmp1) = tmp1.write() {
+
+                if tmp1.len() > 0 {
+                    let cuda_thread1 = cuda_thread.clone();
+                    if cuda_thread1.load(Ordering::SeqCst) < 80 {
+                        let request = tmp1.pop_front().unwrap();
+                        drop(tmp1);
+
+                        std::thread::spawn(move || {
+                            let out = handle_cuda_request(&mut context, &request, index);
+                            request.response.send(out).ok();
+                            cuda_thread1.fetch_sub(1,  Ordering::SeqCst);
+                        });
+                        cuda_thread.fetch_add(1,  Ordering::SeqCst);
+                    }
+                }
+            }
+        }
+    });
 
 
     while let Ok(mut request) = input.recv() {
-        // if let Ok(mut tmp) = tmp.write() {
-            // if cuda_thread.load(Ordering::SeqCst) >= 80 {
-            //     tmp.push_back(request);
-            //     continue;
-            // }
-            // drop(tmp);
-        let out = handle_cuda_request(&mut context, &request, index);
-        request.response.send(out).ok();
-            // let mut context = context.clone();
-            // let cuda_thread1 = cuda_thread.clone();
-            // std::thread::spawn(move || {
-            //     let out = handle_cuda_request(&mut context, &request, index);
-            //     request.response.send(out).ok();
-            //     cuda_thread1.fetch_sub(1,  Ordering::SeqCst);
-            // });
-            // cuda_thread.fetch_add(1,  Ordering::SeqCst);
-        // }
+        if let Ok(mut tmp) = tmp.write() {
+            if cuda_thread.load(Ordering::SeqCst) >= 80 {
+                tmp.push_back(request);
+                continue;
+            }
+            drop(tmp);
+
+            let mut context = context.clone();
+            let cuda_thread1 = cuda_thread.clone();
+            std::thread::spawn(move || {
+                let out = handle_cuda_request(&mut context, &request, index);
+                request.response.send(out).ok();
+                cuda_thread1.fetch_sub(1,  Ordering::SeqCst);
+            });
+            cuda_thread.fetch_add(1,  Ordering::SeqCst);
+        }
 
     }
 }
